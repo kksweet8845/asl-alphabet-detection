@@ -27,6 +27,14 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
     def img_example(img_raw, label):
         """
             The img features description
+            Each sample(image) has the following properties
+            {
+                height  : int64,
+                width   : int64,
+                depth   : int64,
+                label   : int64,
+                img_raw : bytes
+            }
         """
         img_tensor = tf.io.decode_image(img_raw)
         img_shape = img_tensor.shape
@@ -57,6 +65,9 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
 
 
 def parse_tfRecords(tfRecords_file="images.tfrecords"):
+    """ 
+        Parse the tfrecords file
+    """
 
     raw_image_dataset = tf.data.TFRecordDataset(tfRecords_file)
 
@@ -70,7 +81,6 @@ def parse_tfRecords(tfRecords_file="images.tfrecords"):
 
     def _parse_example_fn(example_proto):
         return tf.io.parse_single_example(example_proto, img_feature_desc)
-
 
     parsed_img_dataset = raw_image_dataset.map(_parse_example_fn)
 
