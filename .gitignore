@@ -1,0 +1,6 @@
+data/
+data2/
+preview.log
+*.tfrecords
+tfrecords
+log
