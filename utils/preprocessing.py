@@ -25,9 +25,12 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
     """
 
     def img_example(img_raw, label):
+        """
+            The img features description
+        """
         img_tensor = tf.io.decode_image(img_raw)
         img_shape = img_tensor.shape
-        
+
         feature = {
             'height'   : _int64_feature(img_shape[0]),
             'width'    : _int64_feature(img_shape[1]),
