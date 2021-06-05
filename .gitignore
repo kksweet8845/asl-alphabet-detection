@@ -4,3 +4,4 @@ preview.log
 *.tfrecords
 tfrecords
 log
+__pycache__
