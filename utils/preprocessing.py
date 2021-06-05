@@ -49,8 +49,6 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
 
         return tf.train.Example(features=tf.train.Features(feature=feature))
 
-
-
     writer = tf.io.TFRecordWriter(tf_output_file)
     for root, dirs, files in os.walk(from_dir, topdown=False):
         for dirname in dirs:

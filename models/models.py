@@ -16,13 +16,9 @@ class AlexNet(Model):
         self.d2 = Dense(classes)
 
     def call(self, x, trainin=True):
-        print(x.shape)
         x = self.conv1(x)
-        print(x.shape)
         x = self.flatten(x)
-        print(x.shape)
         x = self.d1(x)
-        print(x.shape)
         return self.d2(x)
 
 
