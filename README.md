@@ -42,5 +42,5 @@ $ pip install -r requirement.txt
 $ python read-img.py -i [Path of the directory] -o [The path of output file]
 ```
 
-4. 
+4. If you suceed in step 3, you can forward to `training.py` to change the train and test value to train your model. 
 
