@@ -5,3 +5,11 @@ preview.log
 tfrecords
 log
 __pycache__
+model_src/
+*_src
+frozen_graph.*
+openvino-models
+processed_data
+*.zip
+.vscode
+*.pyc

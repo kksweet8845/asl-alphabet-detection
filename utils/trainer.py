@@ -4,21 +4,22 @@ from tqdm import tqdm
 
 
 
-def Trainer(train, test, model, epoch=5):
+def Trainer(train, test, model, epoch=5, ts=0, tts=0):
     """
         The Trainer to train the @model
         Inside this fn, you can modify the `loss object`, `optimizer` to different one.
     """
-
+    l = ts + tts
+    l = 10000 if l == 0 else l
     # Train dataset
-    train_ds = parse_tfRecords(train).filter(lambda x: x['height'] == x['width'] and x['label'] < 5)
-    train_ds = train_ds.shuffle(10000).batch(32)
+    train_ds = parse_tfRecords(train).filter(lambda x: x['height'] == x['width'])
+    train_ds = train_ds.shuffle(l).batch(32)
 
     # Test dataset
-    test_ds = parse_tfRecords(test).filter(lambda x: x['height'] == x['width'] and x['label'] < 5)
+    test_ds = parse_tfRecords(test).filter(lambda x: x['height'] == x['width'])
 
     # Loss function
-    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False)
     # Optimizer
     optimizer = tf.keras.optimizers.Adam()
 
@@ -51,12 +52,13 @@ def Trainer(train, test, model, epoch=5):
         test_loss(loss)
         test_accuracy(labels, predictions)
 
-    
-    for epo in range(epoch):
+    pbar = tqdm(range(epoch))
+    for epo in pbar:
 
         train_loss.reset_states()
         train_accuracy.reset_states()
 
+        # progress = tqdm(total=l/32)
         for record in train_ds:
             if record['img_raw'].shape[0] == 1:
                 imgs = tf.expand_dims(tf.io.decode_image(record['img_raw'].numpy(), channels=1), axis=0)
@@ -69,6 +71,7 @@ def Trainer(train, test, model, epoch=5):
                 labels = record['label']
 
             train_step(imgs, labels)
+            # progress.update(1)
 
         for record in test_ds:
             imgs = tf.io.decode_image(record['img_raw'].numpy(), channels=1)
@@ -79,11 +82,16 @@ def Trainer(train, test, model, epoch=5):
             imgs = tf.cast(imgs, dtype=tf.float16)
             test_step(imgs, labels)
 
-        print("="*60)
-        print(f'Epoch : {epo}\n train_loss: {train_loss.result()},\n train_accuracy : {train_accuracy.result()}')
-        print(f'test_loss : {test_loss.result()}, \n test_accuracy : {test_accuracy.result()}')
+        pbar.set_postfix({
+            "train_loss" : f"{train_loss.result():3f}",
+            "train_acc" : f"{train_accuracy.result():3f}",
+            "test_loss" : f"{test_loss.result():3f}",
+            "test_acc" : f"{test_accuracy.result():3f}",
+        })
+        # print("="*60)
+        # print(f'Epoch : {epo}\n train_loss: {train_loss.result()},\n train_accuracy : {train_accuracy.result()}')
+        # print(f'test_loss : {test_loss.result()}, \n test_accuracy : {test_accuracy.result()}')
 
-    
 
 
 

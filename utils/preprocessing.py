@@ -49,6 +49,7 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
 
         return tf.train.Example(features=tf.train.Features(feature=feature))
 
+    data_size = 0
     writer = tf.io.TFRecordWriter(tf_output_file)
     for root, dirs, files in os.walk(from_dir, topdown=False):
         for dirname in dirs:
@@ -59,6 +60,8 @@ def to_tfRecord(from_dir, type="jpg", tf_output_file="images.tfrecords"):
                 img_string = open(imagepath, 'rb').read()
                 tf_example = img_example(img_string, label)
                 writer.write(tf_example.SerializeToString())
+                data_size += 1
+    return data_size
 
 
 
